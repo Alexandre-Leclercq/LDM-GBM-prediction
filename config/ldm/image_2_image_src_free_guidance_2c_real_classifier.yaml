@@ -1,0 +1,92 @@
+model:
+  base_learning_rate: 2.0e-06
+  target: models.ldm_stable.models.diffusion.ddpm.LatentDiffusion
+  params:
+    linear_start: 0.0015
+    linear_end: 0.0195
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    ddim_steps: 200
+    ddim_unconditional_scale: 1.0 # use to controle the classifier-free guidance
+    first_stage_config:
+      preMRI: 
+        dir: 'logs/256/pre_post/18-09-2024_105313_vqgan_f4'
+        checkpoint: 'epoch=000344.ckpt'
+      gtv: 
+        dir: 'logs/256/gtv/2025-02-18_184953_vqgan_gtv_conditionner'
+        checkpoint: 'epoch=000032.ckpt'
+      postMRI: preMRI
+    source_keys: 
+      - preMRI
+      - gtv
+    noised_source: false
+    source_noised_function: skip_noise
+    source_noised_gamma: 0.2
+    target_key: postMRI
+    condition_key: class # the modalities use for the condition
+    image_size: 64
+    channels: 4
+    cond_stage_trainable: true # yes we learn a class embedding
+    conditioning_key: crossattn #crossattn to choose the mecanism of conditionning to use with the wrapper
+    monitor: val/loss
+    unet_config:
+      target: models.ldm_stable.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 64
+        in_channels: 4
+        out_channels: 4
+        model_channels: 160
+        attention_resolutions:
+        #note: this isn\t actually the resolution but
+        # the downsampling factor, i.e. this corresnponds to
+        # attention on spatial resolution 8,16,32, as the
+        # spatial reolution of the latents is 32 for f8
+        - 4
+        - 2
+        num_res_blocks: 2
+        channel_mult:
+        - 1
+        - 2
+        - 3
+        - 4
+        num_head_channels: 16
+        use_spatial_transformer: true
+        #use_linear_in_transformer: true
+        transformer_depth: 1
+        context_dim: 4 # only set if we use the spatial_transformer. Correspond to the dimension of the context provide by the diffusion model
+    cond_stage_config: 
+      target: models.ldm_stable.modules.encoders.modules.ClassEmbedder
+      params:
+        n_classes: 2
+        embed_dim: 4
+        key: class
+
+data:
+  target: data.MRIDataModule.MRIDataModule
+  params:
+    dataset_path: '../DB_IA-Gen-Med-Im_6578_predict_survie'
+    manifest_filename: 'MRI_dataset_conditional_generation_2_class_real_classifier.csv'
+    data_split_manifest_filename: './logs/256/pre_post/18-09-2024_105313_vqgan_f4/configs/patient_split.csv'
+    task: 'free_guidance_conditionnal_generation'
+    seed: 23
+    normalization: 'max'
+    num_workers: 24
+    batch_size: 30
+    #crop_size: 480
+    resize_size: 256
+    tanh_range: True
+    data_augmentation: True
+    train_val_test_shuffle: [True, False, False]
+    train_val_test_split: [0.8, 0.1, 0.1]
+image_logger:
+  frequence_unit: "epoch"
+lightning:
+  trainer:
+    deterministic: True
+    benchmark: True
+    accelerator: auto  # cpu, gpu, tpu, hpu or auto
+    devices: auto
+    strategy: auto
+    #strategy: ddp_find_unused_parameters_true for multi gpus
+    #accumulate_grad_batches: 2

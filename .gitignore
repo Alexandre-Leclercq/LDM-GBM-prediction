@@ -1,0 +1,12 @@
+.idea
+.ipynb_checkpoints
+__pycache__/
+.DS_Store
+data/datasets/
+data/script_database/
+weights/
+logs
+archive_log
+lightning_logs
+test.ipynb
+*.png

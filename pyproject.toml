@@ -1,0 +1,44 @@
+[project]
+name = "ia-gen-med-im"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alexandre G. Leclercq",email = "alexandre.leclercq@unicaen.fr"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch (==2.7.0)",
+    "lightning (==2.3)",
+    "numpy (==1.26.3)",
+    "torchvision (==0.22.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "einops (>=0.8.1,<0.9.0)",
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "pandas (>=2.3.0,<3.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "nibabel (>=5.3.2,<6.0.0)",
+    "omegaconf (>=2.3.0,<3.0.0)",
+    "tensorboard (>=2.19.0,<3.0.0)",
+    "lpips (>=0.1.4,<0.2.0)",
+    "jupyterlab (>=4.4.3,<5.0.0)",
+    "notebook (>=7.4.3,<8.0.0)",
+    "pydicom (>=3.0.1,<4.0.0)"
+]
+
+[tool.poetry.dependencies]
+torch = {source = "torch-cu128"}
+
+
+[[tool.poetry.source]]
+name = "torch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+priority = "explicit"
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+

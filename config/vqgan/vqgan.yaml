@@ -1,0 +1,57 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: models.taming.models.vqgan.VQModel
+  params:
+    monitor: 'val/total_loss_epoch'
+    embed_dim: 4
+    n_embed: 8192
+    ddconfig:
+      double_z: False
+      z_channels: 4
+      resolution: 256
+      in_channels: 1
+      out_ch: 1
+      ch: 128
+      ch_mult:
+      - 1
+      - 2
+      - 2
+      num_res_blocks: 2
+      attn_resolutions: [64]
+      dropout: 0.0
+
+    lossconfig:
+      target: models.taming.modules.losses.vqperceptual.VQLPIPSWithDiscriminator
+      params:
+        disc_conditional: False
+        disc_in_channels: 1
+        disc_start: 1000
+        disc_weight: 0.8
+        codebook_weight: 1.0
+
+data:
+  target: data.MRIDataModule.MRIDataModule
+  params:
+    dataset_path: '../DB_IA-Gen-Med-Im_6578_predict_survie'
+    manifest_filename: 'MRI_dataset_autoencoder.csv'
+#    data_split_manifest_filename: 'logs/16-09-2024_124416_vqgan_f8/configs/patient_split.csv'
+    task: 'autoencoder'
+    seed: 23
+    normalization: 'max'
+    num_workers: 16
+    batch_size: 6
+    #crop_size: 480
+    resize_size: 256
+    tanh_range: True
+    data_augmentation: True
+    train_val_test_shuffle: [True, False, False]
+    train_val_test_split: [0.8, 0.1, 0.1]
+
+lightning:
+  trainer:
+    benchmark: True
+    accelerator: auto  # cpu, gpu, tpu, hpu or auto
+    devices: auto
+    strategy: auto
+    #strategy: ddp_find_unused_parameters_true for multi gpus
+    #accumulate_grad_batches: 2
