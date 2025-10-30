@@ -2,7 +2,7 @@
 
 [![paper](https://img.shields.io/badge/LINK-arXiv-darkred?style=for-the-badge)](https://arxiv.org/pdf/2510.17851)
 &nbsp;&nbsp;&nbsp;
-[![paper](https://img.shields.io/badge/DOI-10.1007/978--3--032--05472--2__18-blue?style=for-the-badge)](https://doi.org/10.1007/978-3-032-05472-2_18)
+[![paper](https://img.shields.io/badge/DOI%20PUBLISHER-10.1007/978--3--032--05472--2__18-blue?style=for-the-badge)](https://doi.org/10.1007/978-3-032-05472-2_18)
 &nbsp;&nbsp;&nbsp;
 
 
